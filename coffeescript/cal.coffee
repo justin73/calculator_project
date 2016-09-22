@@ -90,17 +90,18 @@ jQuery ->
 											a = numbers[index]
 											b = numbers[index+1]
 											# calculate  with * and / first
+											console.log(index)
 											if operators[index] == "*"
 												temp = parseFloat(a)*parseFloat(b)
-												console.log(temp)
 											if operators[index] == "/"
 												temp = parseFloat(a)/parseFloat(b)
-											# if ($.inArray('*', operators) == -1 and $.inArray('/', operators) == -1)
-											# 	if operators[index] == "+"
-											# 		temp = parseFloat(a)+parseFloat(b)
-											# 	if operators[index] == "-"
-											# 		temp = parseFloat(a)-parseFloat(b)
-											# console.log(temp)
+												console.log("/")
+											if ($.inArray('*', operators) == -1 and $.inArray('/', operators) == -1)
+												if operators[index] == "+"
+													temp = parseFloat(a)+parseFloat(b)
+												if operators[index] == "-"
+													temp = parseFloat(a)-parseFloat(b)
+											console.log(temp)
 											if temp
 												numbers[index] = temp
 												numbers.splice(index+1,1)
@@ -108,7 +109,10 @@ jQuery ->
 												final_result = numbers[0]
 												$("#display_val").text(final_result)
 											# console.log(numbers)
-											operators.splice(index, 1)
+											#works when */ is ahead of +-
+											# operators.splice(index, 1)
+											#works when +- is ahead of */
+											operators.splice(index+1, 1)
 											temp_index -=1
 
 										)

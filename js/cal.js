@@ -92,13 +92,23 @@
                         var a, b, final_result, temp;
                         a = numbers[index];
                         b = numbers[index + 1];
+                        console.log(index);
                         if (operators[index] === "*") {
                           temp = parseFloat(a) * parseFloat(b);
-                          console.log(temp);
                         }
                         if (operators[index] === "/") {
                           temp = parseFloat(a) / parseFloat(b);
+                          console.log("/");
                         }
+                        if ($.inArray('*', operators) === -1 && $.inArray('/', operators) === -1) {
+                          if (operators[index] === "+") {
+                            temp = parseFloat(a) + parseFloat(b);
+                          }
+                          if (operators[index] === "-") {
+                            temp = parseFloat(a) - parseFloat(b);
+                          }
+                        }
+                        console.log(temp);
                         if (temp) {
                           numbers[index] = temp;
                           numbers.splice(index + 1, 1);
@@ -107,7 +117,7 @@
                           final_result = numbers[0];
                           $("#display_val").text(final_result);
                         }
-                        operators.splice(index, 1);
+                        operators.splice(index + 1, 1);
                         return temp_index -= 1;
                       });
                     }
