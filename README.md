@@ -6,9 +6,7 @@ this project started on 9/20 evening, on average, worked 2.5 hours every night, 
 Due to the time limits, there are a couple of things which hasn't been implemented yet, i will keep working on them 
 and will let you know when i am done with them
  (1) comma display : ran into some problems with 7+ digits display, so the code is temporarily commented out.
- (2) keyboard input is not implemented yet: for this, the idea is to replace the current display bar(p tag) with an input element,
-     and only allows keyboard input with numebrs and operators.
- (3) data validation is not done completely: parenthese validation not complete 
+ (2) data validation is not done completely: parenthese validation not complete 
 
 For now, the calculator can do:
   1. single operator calculation, e.g. +,-,*,/ for both integer and decimal numbers
