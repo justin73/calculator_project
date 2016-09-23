@@ -20,7 +20,7 @@ For now, the calculator can do:
   
   
 Exisiting bugs:
-  1. mixed operator calculation: there is a bug with two secondary operators(*,/) using together, such as 3+4*5/6
+  1. mixed operator calculation: there is a bug with two secondary operators(x,/) using together, such as 3+4x5/6
   2. parenthese calculation:  exisiting bug which is when the value inside parenthese is negative, then it fails
   3. since validation is not done yet, so for parenthese calculation, there are some non-valid format still allowed
 
