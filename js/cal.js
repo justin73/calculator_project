@@ -205,6 +205,7 @@
                 temp = (parseFloat(a) / parseFloat(b)).toFixed(decimal_num);
               }
             }
+            operators.splice(index, 1);
             if (numbers.length > 2) {
               numbers.splice(0, 2);
               numbers.unshift(temp);
@@ -289,14 +290,13 @@
           if (btn.prop("id") === "equal") {
             if (operator_counter >= 2) {
               if (display_val.indexOf("(") > -1 && display_val.indexOf(")") > -1) {
-                parenthese_cal(display_val);
+                return parenthese_cal(display_val);
               } else {
-                none_parentheses_cal(display_val);
+                return none_parentheses_cal(display_val);
               }
             } else {
-              none_parentheses_cal(display_val);
+              return none_parentheses_cal(display_val);
             }
-            return $("#display_val").text(final_result);
           } else {
             last_char = display_val[display_val.length - 1];
             if (factor_divider.indexOf(last_char) > -1) {

@@ -181,6 +181,7 @@ jQuery ->
 							temp = (parseFloat(a)/parseFloat(b)).toFixed(5)
 						else
 							temp = (parseFloat(a)/parseFloat(b)).toFixed(decimal_num)
+					operators.splice(index, 1)
 					if numbers.length > 2
 						numbers.splice(0,2)
 						numbers.unshift(temp)
@@ -263,8 +264,6 @@ jQuery ->
 					else
 						# single operation
 						none_parentheses_cal(display_val)
-
-					$("#display_val").text(final_result)
 				else
 					# input part
 
