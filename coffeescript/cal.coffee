@@ -2,6 +2,8 @@ jQuery ->
 	$ = jQuery
 	# get all the pressable keys
 	keys= $("#calculator span")
+	cal_obj = {a:0,b:0}
+	op_obj = {}
 	operator = ""
 	operator_counter = 0
 	has_dot = false
@@ -16,28 +18,6 @@ jQuery ->
 				decimal_number = 8
 			return decimal_number
 		return 0
-
-	basic_cal = (a,b)->
-		a_decimal = countDecimals(a)
-		b_decimal = countDecimals(b)
-		# based on the decimals of two factors, decide which decimal should be applied to the final result
-		decimal = if a_decimal>b_decimal then a_decimal else b_decimal
-		# the actual calculate part
-		if operator == "+"
-			final_result = (parseFloat(a)+parseFloat(b)).toFixed(decimal)
-		if operator =="-"
-			final_result = (parseFloat(a)-parseFloat(b)).toFixed(decimal)
-		if operator =="*"
-			final_result = (parseFloat(a)*parseFloat(b)).toFixed(decimal)
-		if operator =="/"
-			temp = parseFloat(a)/parseFloat(b)
-			console.log(temp)
-			decimal_num = countDecimals(temp)
-			if decimal_num > 5
-				final_result = (parseFloat(a)/parseFloat(b)).toFixed(5)
-			else
-				final_result = (parseFloat(a)/parseFloat(b)).toFixed(decimal_num)
-		return final_result
 
 	parenthese_cal = (display_val)->
 		while display_val.indexOf("+") or display_val.indexOf("-") or display_val.indexOf("*") or display_val.indexOf("/")
@@ -77,13 +57,7 @@ jQuery ->
 							if operators[index] == "*"
 								temp = (parseFloat(a)*parseFloat(b)).toFixed(decimal)
 							if operators[index] == "/"
-								temp = parseFloat(a)/parseFloat(b)
-								console.log(temp)
-								decimal_num = countDecimals(temp)
-								if decimal_num > 5
-									temp = (parseFloat(a)/parseFloat(b)).toFixed(5)
-								else
-									temp = (parseFloat(a)/parseFloat(b)).toFixed(decimal_num)
+								temp = (parseFloat(a)/parseFloat(b)).toFixed(decimal)
 							if numbers.length > 2
 								numbers.splice(0,2)
 								numbers.unshift(temp)
@@ -111,13 +85,7 @@ jQuery ->
 										if operators[index] == "*"
 											temp = parseFloat(a)*parseFloat(b).toFixed(decimal)
 										if operators[index] == "/"
-											temp = parseFloat(a)/parseFloat(b)
-											console.log(temp)
-											decimal_num = countDecimals(temp)
-											if decimal_num > 5
-												temp = (parseFloat(a)/parseFloat(b)).toFixed(5)
-											else
-												temp = (parseFloat(a)/parseFloat(b)).toFixed(decimal_num)
+											temp = parseFloat(a)/parseFloat(b).toFixed(decimal)
 										operators.splice(index, 1)
 										if temp
 											numbers[index] = temp
@@ -174,14 +142,7 @@ jQuery ->
 					if operators[index] == "*"
 						temp = (parseFloat(a)*parseFloat(b)).toFixed(decimal)
 					if operators[index] == "/"
-						temp = parseFloat(a)/parseFloat(b)
-						console.log(temp)
-						decimal_num = countDecimals(temp)
-						if decimal_num > 5
-							temp = (parseFloat(a)/parseFloat(b)).toFixed(5)
-						else
-							temp = (parseFloat(a)/parseFloat(b)).toFixed(decimal_num)
-					operators.splice(index, 1)
+						temp = (parseFloat(a)/parseFloat(b)).toFixed(decimal)
 					if numbers.length > 2
 						numbers.splice(0,2)
 						numbers.unshift(temp)
@@ -210,13 +171,7 @@ jQuery ->
 								if operators[index] == "*"
 									temp = parseFloat(a)*parseFloat(b).toFixed(decimal)
 								if operators[index] == "/"
-									temp = parseFloat(a)/parseFloat(b)
-									console.log(temp)
-									decimal_num = countDecimals(temp)
-									if decimal_num > 5
-										temp = (parseFloat(a)/parseFloat(b)).toFixed(5)
-									else
-										temp = (parseFloat(a)/parseFloat(b)).toFixed(decimal_num)
+									temp = parseFloat(a)/parseFloat(b).toFixed(decimal)
 								operators.splice(index, 1)
 								if temp
 									numbers[index] = temp
@@ -248,6 +203,7 @@ jQuery ->
 			# to clear current data
 			if btn.prop("id") == "clear"
 					$("#display_val").text("")
+					cal_obj = {a:0,b:0}
 					operator = ""
 					has_dot = false
 					numbers = []
@@ -257,14 +213,34 @@ jQuery ->
 				if btn.prop("id") == "equal"
 					if  operator_counter >= 2
 						#complex operation
+
+						# if there is parenthese then respect the ()
 						if display_val.indexOf("(")>-1 and display_val.indexOf(")")>-1
 							parenthese_cal(display_val)
+
+						# if no () then respect the regular opertaion priority
 						else
 							none_parentheses_cal(display_val)
+
 					else
 						# single operation
-						none_parentheses_cal(display_val)
+						cal_obj.b = $("#display_val").text().replace(cal_obj.a+operator,"")
+						a_decimal = countDecimals(cal_obj.a)
+						b_decimal = countDecimals(cal_obj.b)
+						# based on the decimals of two factors, decide which decimal should be applied to the final result
+						decimal = if a_decimal>b_decimal then a_decimal else b_decimal
+						# the actual calculate part
+						if operator == "+"
+							final_result = (parseFloat(cal_obj.a)+parseFloat(cal_obj.b)).toFixed(decimal)
+						if operator =="-"
+							final_result = (parseFloat(cal_obj.a)-parseFloat(cal_obj.b)).toFixed(decimal)
+						if operator =="*"
+							final_result = (parseFloat(cal_obj.a)*parseFloat(cal_obj.b)).toFixed(decimal)
+						if operator =="/"
+							final_result = (parseFloat(cal_obj.a)/parseFloat(cal_obj.b)).toFixed(decimal)
+					$("#display_val").text(final_result)
 				else
+
 					# input part
 
 					# if dot is already in the number then disable any more dots, but if there is operator after one number then dot is allow for the second number
@@ -275,9 +251,8 @@ jQuery ->
 							has_dot= false
 					if btn.hasClass("operator")
 						operator_counter += 1
+						cal_obj.a = display_val
 						operator = btn.text()
-						if factor_divider.indexOf(last_char) > -1
-							display_val = display_val.slice(0,-1)
 					if btn.prop("id") == "dot"
 						#only allow dot when there is none in the data, otherwise, skip it
 						if not has_dot
