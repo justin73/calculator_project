@@ -22,7 +22,10 @@
       return 0;
     };
     basic_cal = function(a, b) {
-      var decimal_num, final_result, temp;
+      var a_decimal, b_decimal, decimal, decimal_num, final_result, temp;
+      a_decimal = countDecimals(a);
+      b_decimal = countDecimals(b);
+      decimal = a_decimal > b_decimal ? a_decimal : b_decimal;
       if (operator === "+") {
         final_result = (parseFloat(a) + parseFloat(b)).toFixed(decimal);
       }
@@ -48,6 +51,9 @@
       var left_value, matches, num_regex, operator_regex, priority_operation, regExp, results, temp_index;
       results = [];
       while (display_val.indexOf("+") || display_val.indexOf("-") || display_val.indexOf("*") || display_val.indexOf("/")) {
+        console.log(display_val);
+        operator_regex = /[^0-9.]+/g;
+        operators = display_val.match(operator_regex);
         regExp = /\(([^)]+)\)/;
         matches = regExp.exec(display_val);
         if (matches) {
@@ -157,7 +163,8 @@
           results.push(display_val = display_val.replace(priority_operation, left_value));
         } else {
           none_parentheses_cal(display_val);
-          results.push(display_val = final_result);
+          display_val = final_result;
+          results.push($("#display_val").text(final_result));
         }
       }
       return results;
@@ -268,7 +275,7 @@
     };
     return $.each(keys, function(index, value) {
       return $(this).on("click", function() {
-        var a, append_comma, btn, display_val, factor, last_char, last_comma_position, last_three_char, num_comma, str_length;
+        var btn, display_val, factor, last_char;
         btn = $(this);
         display_val = $("#display_val").text();
         if (btn.prop("id") === "clear") {
@@ -282,37 +289,15 @@
           if (btn.prop("id") === "equal") {
             if (operator_counter >= 2) {
               if (display_val.indexOf("(") > -1 && display_val.indexOf(")") > -1) {
-                return parenthese_cal(display_val);
+                parenthese_cal(display_val);
               } else {
-                return none_parentheses_cal(display_val);
+                none_parentheses_cal(display_val);
               }
             } else {
-              return none_parentheses_cal(display_val);
+              none_parentheses_cal(display_val);
             }
+            return $("#display_val").text(final_result);
           } else {
-            if (display_val.indexOf(",") > -1) {
-              last_comma_position = display_val.lastIndexOf(",");
-              str_length = display_val.length;
-              a = str_length - 3;
-              num_comma = 0;
-              while (a >= 1) {
-                num_comma += 1;
-                a = a - 3;
-              }
-              if (num_comma) {
-                append_comma = true;
-              }
-            } else {
-              if (display_val.length === 3) {
-                append_comma = /^\d+$/.test(display_val);
-              }
-              if (display_val.length > 3) {
-                last_three_char = display_val.substr(display_val.length - 3);
-                console.log(last_three_char);
-                append_comma = /^\d+$/.test(last_three_char);
-                console.log(append_comma);
-              }
-            }
             last_char = display_val[display_val.length - 1];
             if (factor_divider.indexOf(last_char) > -1) {
               factor = display_val.substring(0, display_val.length - 1);
@@ -321,7 +306,6 @@
               }
             }
             if (btn.hasClass("operator")) {
-              append_comma = false;
               operator_counter += 1;
               operator = btn.text();
               if (factor_divider.indexOf(last_char) > -1) {
@@ -329,7 +313,6 @@
               }
             }
             if (btn.prop("id") === "dot") {
-              append_comma = false;
               if (!has_dot) {
                 display_val += btn.text();
                 has_dot = true;
