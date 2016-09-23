@@ -10,7 +10,7 @@ and will let you know when i am done with them
      and only allows keyboard input with numebrs and operators.
  (3) data validation is not done completely: parenthese validation not complete 
 
-For now, the calculator can do 
+For now, the calculator can do:
   1. single operator calculation, e.g. +,-,*,/ for both integer and decimal numbers
      2345+1234, 23.45+45.345
   2. mixed operators calculation, e.g. + and -, + and /, + and * and / and -,etc for both integer and decimal numbers
@@ -23,3 +23,10 @@ Exisiting bugs:
   1. mixed operator calculation: there is a bug with two secondary operators(*,/) using together, such as 3+4*5/6
   2. parenthese calculation:  exisiting bug which is when the value inside parenthese is negative, then it fails
   3. since validation is not done yet, so for parenthese calculation, there are some non-valid format still allowed
+
+Needs to imporve:
+ UI, interaction as well as aesthetics... 
+ 
+ 
+Thoughts:
+   Life is not complete without libraries.... LOL 
