@@ -27,7 +27,7 @@
       return 0;
     };
     parenthese_cal = function(display_val) {
-      var left_value, matches, num_regex, operator_regex, priority_operation, regExp, results, temp_index;
+      var left_value, matches, negative_inside, num_regex, operator_regex, parenthese_value, priority_operation, regExp, results, temp_index;
       results = [];
       while (display_val.indexOf("+") || display_val.indexOf("-") || display_val.indexOf("*") || display_val.indexOf("/")) {
         console.log(display_val);
@@ -35,6 +35,8 @@
         operators = display_val.match(operator_regex);
         regExp = /\(([^)]+)\)/;
         matches = regExp.exec(display_val);
+        parenthese_value = 0;
+        negative_inside = false;
         if (matches) {
           regExp = /\(([^)]+)\)/;
           matches = regExp.exec(display_val);
@@ -48,7 +50,7 @@
           if (left_value.indexOf("+") > -1 || left_value.indexOf("-") > -1 || left_value.indexOf("/") > -1 || left_value.indexOf("*") > -1) {
             if (($.inArray('*', operators) === -1 && $.inArray('/', operators) === -1) || ($.inArray('+', operators) === -1 && $.inArray('-', operators) === -1)) {
               $.each(operators, function(index) {
-                var a, a_decimal, b, b_decimal, decimal, final_result, number_index, temp;
+                var a, a_decimal, b, b_decimal, decimal, decimal_num, final_result, number_index, temp;
                 number_index = index + temp_index;
                 a = numbers[number_index];
                 b = numbers[number_index + 1];
@@ -64,8 +66,15 @@
                 if (operators[index] === "*") {
                   temp = (parseFloat(a) * parseFloat(b)).toFixed(decimal);
                 }
-                if (operators[index] === "/") {
-                  temp = (parseFloat(a) / parseFloat(b)).toFixed(decimal);
+                if (operator === "/") {
+                  temp = parseFloat(a) / parseFloat(b);
+                  console.log(temp);
+                  decimal_num = countDecimals(temp);
+                  if (decimal_num > 5) {
+                    final_result = (parseFloat(a) / parseFloat(b)).toFixed(5);
+                  } else {
+                    final_result = (parseFloat(a) / parseFloat(b)).toFixed(decimal_num);
+                  }
                 }
                 if (numbers.length > 2) {
                   numbers.splice(0, 2);
@@ -119,7 +128,10 @@
                   }
                   if (numbers.length === 1) {
                     final_result = numbers[0];
-                    return left_value = final_result;
+                    left_value = final_result;
+                    if (left_value < 0) {
+                      return negative_inside = true;
+                    }
                   }
                 });
               }
@@ -127,9 +139,7 @@
           }
           results.push(display_val = display_val.replace(priority_operation, left_value));
         } else {
-          none_parentheses_cal(display_val);
-          display_val = final_result;
-          results.push($("#display_val").text(final_result));
+          results.push(none_parentheses_cal(display_val));
         }
       }
       return results;
@@ -144,10 +154,13 @@
       if (left_value.indexOf("+") > -1 || left_value.indexOf("-") > -1 || left_value.indexOf("/") > -1 || left_value.indexOf("*") > -1) {
         if (($.inArray('*', operators) === -1 && $.inArray('/', operators) === -1) || ($.inArray('+', operators) === -1 && $.inArray('-', operators) === -1)) {
           return $.each(operators, function(index) {
-            var a, a_decimal, b, b_decimal, decimal, final_result, number_index, temp;
+            var a, a_decimal, b, b_decimal, decimal, decimal_num, final_result, number_index, temp;
             number_index = index + temp_index;
             a = numbers[number_index];
             b = numbers[number_index + 1];
+            console.log(numbers);
+            console.log(a);
+            console.log(b);
             a_decimal = countDecimals(a);
             b_decimal = countDecimals(b);
             decimal = a_decimal > b_decimal ? a_decimal : b_decimal;
@@ -161,16 +174,23 @@
               temp = (parseFloat(a) * parseFloat(b)).toFixed(decimal);
             }
             if (operators[index] === "/") {
-              temp = (parseFloat(a) / parseFloat(b)).toFixed(decimal);
+              temp = parseFloat(a) / parseFloat(b);
+              console.log(temp);
+              decimal_num = countDecimals(temp);
+              if (decimal_num > 5) {
+                temp = temp.toFixed(5);
+              } else {
+                temp = temp.toFixed(decimal_num);
+              }
             }
             if (numbers.length > 2) {
               numbers.splice(0, 2);
               numbers.unshift(temp);
-              temp_index -= 1;
+              return temp_index -= 1;
             } else {
               final_result = temp;
+              return $("#display_val").text(final_result);
             }
-            return $("#display_val").text(final_result);
           });
         } else {
           results = [];
@@ -226,7 +246,7 @@
     };
     return $.each(keys, function(index, value) {
       return $(this).on("click", function() {
-        var a_decimal, b_decimal, btn, decimal, display_val, factor, final_result, last_char;
+        var a_decimal, b_decimal, btn, decimal, decimal_num, display_val, factor, final_result, last_char, temp;
         btn = $(this);
         display_val = $("#display_val").text();
         if (btn.prop("id") === "clear") {
@@ -263,7 +283,14 @@
                 final_result = (parseFloat(cal_obj.a) * parseFloat(cal_obj.b)).toFixed(decimal);
               }
               if (operator === "/") {
-                final_result = (parseFloat(cal_obj.a) / parseFloat(cal_obj.b)).toFixed(decimal);
+                temp = parseFloat(cal_obj.a) / parseFloat(cal_obj.b);
+                console.log(temp);
+                decimal_num = countDecimals(temp);
+                if (decimal_num > 5) {
+                  final_result = (parseFloat(cal_obj.a) / parseFloat(cal_obj.b)).toFixed(5);
+                } else {
+                  final_result = (parseFloat(cal_obj.a) / parseFloat(cal_obj.b)).toFixed(decimal_num);
+                }
               }
             }
             return $("#display_val").text(final_result);

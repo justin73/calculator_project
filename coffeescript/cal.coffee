@@ -27,6 +27,8 @@ jQuery ->
 			operators = display_val.match(operator_regex)
 			regExp = /\(([^)]+)\)/
 			matches = regExp.exec(display_val)
+			parenthese_value = 0
+			negative_inside = false
 			if matches
 				regExp = /\(([^)]+)\)/
 				matches = regExp.exec(display_val)
@@ -56,8 +58,14 @@ jQuery ->
 								temp = (parseFloat(a)-parseFloat(b)).toFixed(decimal)
 							if operators[index] == "*"
 								temp = (parseFloat(a)*parseFloat(b)).toFixed(decimal)
-							if operators[index] == "/"
-								temp = (parseFloat(a)/parseFloat(b)).toFixed(decimal)
+							if operator =="/"
+								temp = parseFloat(a)/parseFloat(b)
+								console.log(temp)
+								decimal_num = countDecimals(temp)
+								if decimal_num > 5
+									final_result = (parseFloat(a)/parseFloat(b)).toFixed(5)
+								else
+									final_result = (parseFloat(a)/parseFloat(b)).toFixed(decimal_num)
 							if numbers.length > 2
 								numbers.splice(0,2)
 								numbers.unshift(temp)
@@ -105,6 +113,8 @@ jQuery ->
 								if numbers.length == 1
 									final_result = numbers[0]
 									left_value = final_result
+									if left_value < 0
+										negative_inside = true
 							)
 
 				display_val = display_val.replace(priority_operation,left_value)
@@ -113,8 +123,8 @@ jQuery ->
 
 				none_parentheses_cal(display_val)
 
-				display_val = final_result
-				$("#display_val").text(final_result)
+				# display_val = final_result
+				# $("#display_val").text(final_result)
 
 	none_parentheses_cal = (left_value)->
 		# getting all the numbers
@@ -132,6 +142,9 @@ jQuery ->
 					number_index = index + temp_index
 					a = numbers[number_index]
 					b = numbers[number_index+1]
+					console.log(numbers)
+					console.log(a)
+					console.log(b)
 					a_decimal = countDecimals(a)
 					b_decimal = countDecimals(b)
 					decimal = if a_decimal>b_decimal then a_decimal else b_decimal
@@ -141,8 +154,14 @@ jQuery ->
 						temp = (parseFloat(a)-parseFloat(b)).toFixed(decimal)
 					if operators[index] == "*"
 						temp = (parseFloat(a)*parseFloat(b)).toFixed(decimal)
-					if operators[index] == "/"
-						temp = (parseFloat(a)/parseFloat(b)).toFixed(decimal)
+					if operators[index] =="/"
+						temp = parseFloat(a)/parseFloat(b)
+						console.log(temp)
+						decimal_num = countDecimals(temp)
+						if decimal_num > 5
+							temp = temp.toFixed(5)
+						else
+							temp = temp.toFixed(decimal_num)
 					if numbers.length > 2
 						numbers.splice(0,2)
 						numbers.unshift(temp)
@@ -151,7 +170,7 @@ jQuery ->
 						# console.log("temp index "+temp_index)
 					else
 						final_result = temp
-					$("#display_val").text(final_result)
+						$("#display_val").text(final_result)
 				)
 			else
 				while operators.length >= 1
@@ -237,7 +256,13 @@ jQuery ->
 						if operator =="*"
 							final_result = (parseFloat(cal_obj.a)*parseFloat(cal_obj.b)).toFixed(decimal)
 						if operator =="/"
-							final_result = (parseFloat(cal_obj.a)/parseFloat(cal_obj.b)).toFixed(decimal)
+							temp = parseFloat(cal_obj.a)/parseFloat(cal_obj.b)
+							console.log(temp)
+							decimal_num = countDecimals(temp)
+							if decimal_num > 5
+								final_result = (parseFloat(cal_obj.a)/parseFloat(cal_obj.b)).toFixed(5)
+							else
+								final_result = (parseFloat(cal_obj.a)/parseFloat(cal_obj.b)).toFixed(decimal_num)
 					$("#display_val").text(final_result)
 				else
 
