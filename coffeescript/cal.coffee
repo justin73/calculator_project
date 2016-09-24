@@ -17,13 +17,20 @@ jQuery ->
 			enter_to_calculate()
 		return true
 	)
+	get_operators = (value)->
+		operator_regex = /[^0-9.]+/g  #/[^0-9\\.]+/g
+		# getting all the operators
+		operators = value.match(operator_regex)
+		return operators
+
+	get_numbers = (value)->
+		num_regex =  /[\d\.]+/g #/(\d+)/g
+		numbers = value.match(num_regex)
 
 	enter_to_calculate = ->
 		display_val = $("#display_val").val()
 		display_val = remove_comma(display_val)
-		operator_regex = /[^0-9.]+/g  #/[^0-9\\.]+/g
-		# getting all the operators
-		operators = display_val.match(operator_regex)
+		operators = get_operators(display_val)
 		if  operators.length >= 2
 			#complex operation
 			if display_val.indexOf("(")>-1 and display_val.indexOf(")")>-1
@@ -69,9 +76,7 @@ jQuery ->
 	parenthese_cal = (display_val)->
 		console.log("parenthese equation: "+display_val)
 		while display_val.indexOf("+")>-1 or display_val.indexOf("-")>-1 or display_val.indexOf("*")>-1 or display_val.indexOf("/")>-1
-			operator_regex = /[^0-9.]+/g  #/[^0-9\\.]+/g
-			# getting all the operators
-			operators = display_val.match(operator_regex)
+			operators = get_operators(display_val)
 			regExp = /\(([^)]+)\)/
 			matches = regExp.exec(display_val)
 			parenthese_value = 0
@@ -81,12 +86,8 @@ jQuery ->
 				matches = regExp.exec(display_val)
 				priority_operation = matches[0]
 				left_value = priority_operation.replace("(","").replace(")","")
-				num_regex =  /[\d\.]+/g #/(\d+)/g
-				numbers = priority_operation.match(num_regex)
-				operator_regex = /[^0-9.]+/g  #/[^0-9\\.]+/g
-				# getting all the operators
-				operators = left_value.match(operator_regex)
-
+				numbers = get_numbers(priority_operation)
+				operators = get_operators(left_value)
 				temp_index = 0
 				if left_value.indexOf("+") > -1 or left_value.indexOf("-") > -1 or left_value.indexOf("/") > -1 or left_value.indexOf("*") > -1
 					# check if there is  * or / to change the operation order
@@ -168,10 +169,8 @@ jQuery ->
 				continue
 			else
 				# if the left value is a negative number then loop stop here too
-				num_regex =  /[\d\.]+/g #/(\d+)/g
-				numbers = display_val.match(num_regex)
-				operator_regex = /[^0-9.]+/g  #/[^0-9\\.]+/g
-				operators = display_val.match(operator_regex)
+				numbers = get_numbers(display_val)
+				operators = get_operators(display_val)
 				if numbers.length == 1 and operators.length == 1 and operators[0] =="-"
 					display_val = display_val.toString()
 					break
@@ -181,10 +180,34 @@ jQuery ->
 					if display_val.indexOf("+-") > -1
 						display_val = display_val.replace("+-","-")
 					if display_val.indexOf("*-") > -1
+						negative_index = display_val.indexOf("*-")
 						temp_display_val = display_val.replace("*-","")
 						if temp_display_val.indexOf("+") == -1 and temp_display_val.indexOf("+") == -1
 							display_val = display_val.replace("*-","*")
 							display_val = "0-"+display_val
+						else
+							console.log("plus position:" + display_val.indexOf("+"))
+							console.log("*- position:" + display_val.indexOf("*-"))
+							if display_val.indexOf("+")> -1
+								if display_val.indexOf("+") < display_val.indexOf("*-")
+									display_val = display_val.replace("*-","*")
+									temp =display_val.slice(display_val.indexOf("+"))
+									display_val_remaining = temp.slice(1)
+									display_val = display_val.slice(0,display_val.indexOf("+"))+"+0-"+display_val_remaining
+									console.log("there is a plus ahead"  + display_val)
+								else
+									display_val = "0-"+display_val
+									console.log("there is no plus ahead" + display_val)
+							if display_val.indexOf("-")> -1
+								if display_val.indexOf("-") < display_val.indexOf("*-")
+									display_val = display_val.replace("*-","*")
+									temp =display_val.slice(display_val.indexOf("-"))
+									display_val_remaining = temp.slice(1)
+									display_val = display_val.slice(0,display_val.indexOf("+"))+"+0+"+display_val_remaining
+									console.log("there is a minus ahead"  + display_val)
+								else
+									display_val = "0+"+display_val
+									console.log("there is no minus ahead" + display_val)
 					if display_val.indexOf("/-") > -1
 						temp_display_val = display_val.replace("*-","")
 						if temp_display_val.indexOf("+") == -1 and temp_display_val.indexOf("+") == -1
@@ -197,12 +220,11 @@ jQuery ->
 
 	none_parentheses_cal = (left_value)->
 		console.log("non-parenthese equation: "+left_value)
+		if left_value.charAt(0) == "-"
+			left_value = "0"+left_value
 		# getting all the numbers
-		num_regex =  /[\d\.]+/g #/(\d+)/g
-		numbers = left_value.match(num_regex)
-		operator_regex = /[^0-9.]+/g  #/[^0-9\\.]+/g
-		# getting all the operators
-		operators = left_value.match(operator_regex)
+		numbers = get_numbers(left_value)
+		operators = get_operators(left_value)
 		temp_index = 0
 		final_result = 0
 		if left_value.indexOf("+") > -1 or left_value.indexOf("-") > -1 or left_value.indexOf("/") > -1 or left_value.indexOf("*") > -1
@@ -286,7 +308,6 @@ jQuery ->
 			display_val = $("#display_val").val()
 			# to clear current data
 			if btn.prop("id") == "clear"
-					# $("#display_val").text("")
 					$("#display_val").val("")
 					operator = ""
 					has_dot = false
