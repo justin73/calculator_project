@@ -3,8 +3,7 @@
 
 this project started on 9/20 evening, on average, worked 2.5 hours every night, so in total it took abour 7.5 hours.
 
-Due to the time limits, there are one thing which hasn't been implemented yet, i will keep working on them 
-and will let you know when i am done with them
+Due to the time limits, there are one thing which hasn't been implemented yet
  (1) data validation is not done completely: parenthese validation not complete 
 
 For now, the calculator can do:
@@ -17,12 +16,5 @@ For now, the calculator can do:
   
   
 Exisiting bugs:
-  1. parenthese calculation:  exisiting bug which is when the value inside parenthese is negative, then it fails
-  2. since validation is not done yet, so for parenthese calculation, there are some non-valid format still allowed
+  1. since validation is not done yet, so for parenthese calculation, there are some non-valid format still allowed
 
-Needs to imporve:
- UI, interaction as well as aesthetics... 
- 
- 
-Thoughts:
-   Life is not complete without libraries.... LOL 
