@@ -32,6 +32,7 @@ jQuery ->
 		else
 			# single operation
 			final_result = none_parentheses_cal(display_val)
+		final_result = add_comma(final_result)
 		$("#display_val").val(final_result)
 
 	countDecimals = (value)->
@@ -41,6 +42,23 @@ jQuery ->
 				decimal_number = 8
 			return decimal_number
 		return 0
+
+	remove_comma = (value)->
+		new_value = value.replace(",","")
+		return new_value
+	add_comma = (value)->
+		is_integer = /^\d+$/.test(value)
+		# if it is integer, then add comma after every three digits
+		if is_integer
+			value = value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+			return value
+		# if it is decimal, only add comma after every three digits before the dot
+		else
+			integer_part = value.split(".")[0]
+			decimal_part = value.split(".")[1]
+			integer_value = integer_part.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+			value = integer_value+"."+decimal_part
+			return value
 
 	parenthese_cal = (display_val)->
 		console.log("parenthese equation: "+display_val)
@@ -283,8 +301,20 @@ jQuery ->
 						# forbid multiple 0 at the beginning of the value and first char is operators
 						if not(last_char == "0" && btn.text() == "0" and display_val.length == 1) and not(display_val.length==0 and btn.hasClass("operator")) #and not ( "()*/+-".indexOf(last_char)> -1 and "()*/+-".indexOf(btn.text())>-1)
 							display_val += btn.text()
-							console.log(display_val)
-					# $("#display_val").text(display_val)
+							if append_comma
+								a = display_val.length-3
+								console.log(a)
+								next_comma = 1
+								move = 0
+								while a > 0
+									display_val = display_val.slice(0, 3*next_comma+move) + "," + display_val.slice(3*next_comma+move)
+									a -=3
+									next_comma +=1
+									move +=1
+									# last_three_char = display_val.substr(display_val.length-3);
+									# display_val = display_val.substr(0,display_val.length-3)+","+last_three_char
+
+					append_comma = false
 					$("#display_val").val(display_val)
 		)
 	)
