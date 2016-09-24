@@ -3,10 +3,9 @@
 
 this project started on 9/20 evening, on average, worked 2.5 hours every night, so in total it took abour 7.5 hours.
 
-Due to the time limits, there are a couple of things which hasn't been implemented yet, i will keep working on them 
+Due to the time limits, there are one thing which hasn't been implemented yet, i will keep working on them 
 and will let you know when i am done with them
- (1) comma display : ran into some problems with 7+ digits display, so the code is temporarily commented out.
- (2) data validation is not done completely: parenthese validation not complete 
+ (1) data validation is not done completely: parenthese validation not complete 
 
 For now, the calculator can do:
   1. single operator calculation, e.g. +,-,*,/ for both integer and decimal numbers
