@@ -3,9 +3,6 @@
 
 this project started on 9/20 evening, on average, worked 2.5 hours every night, so in total it took abour 7.5 hours.
 
-Due to the time limits, there are one thing which hasn't been implemented yet
- (1) data validation is not done completely: keyboard input parenthese validation not complete 
-
 For now, the calculator can do:
   1. single operator calculation, e.g. +,-,*,/ for both integer and decimal numbers
      2345+1234, 23.45+45.345
@@ -16,7 +13,7 @@ For now, the calculator can do:
   
   
 Exisiting bugs:
-  1. since validation is not done yet, so for parenthese calculation, there are some non-valid format still allowed
-  2. only allows one layer of parenthese for now
+  1. there may be some input validation is not covered. 
+  2. only allows one layer of parenthese for now. 
 
 
