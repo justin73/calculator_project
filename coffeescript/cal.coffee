@@ -10,13 +10,29 @@ jQuery ->
 	operators=[]
 
 	$( "#display_val" ).on("keypress", (e)->
-		valid_keys= [13,42,46,63,43,95,48,49,50,51,52,53,54,55,56,57]
+		valid_keys= [13,40,41,42,45,46,47,63,43,95,48,49,50,51,52,53,54,55,56,57]
 		if valid_keys.indexOf(e.keyCode) == -1
 			return false
 		if e.keyCode == 13
-			$("#equal").trigger("click")
+			enter_to_calculate()
 		return true
 	)
+
+	enter_to_calculate = ->
+		display_val = $("#display_val").val()
+		operator_regex = /[^0-9.]+/g  #/[^0-9\\.]+/g
+		# getting all the operators
+		operators = display_val.match(operator_regex)
+		if  operators.length >= 2
+			#complex operation
+			if display_val.indexOf("(")>-1 and display_val.indexOf(")")>-1
+				final_result = parenthese_cal(display_val)
+			else
+				final_result = none_parentheses_cal(display_val)
+		else
+			# single operation
+			final_result = none_parentheses_cal(display_val)
+		$("#display_val").val(final_result)
 
 	countDecimals = (value)->
 		if (value % 1) != 0
@@ -26,29 +42,8 @@ jQuery ->
 			return decimal_number
 		return 0
 
-	basic_cal = (a,b)->
-		a_decimal = countDecimals(a)
-		b_decimal = countDecimals(b)
-		# based on the decimals of two factors, decide which decimal should be applied to the final result
-		decimal = if a_decimal>b_decimal then a_decimal else b_decimal
-		# the actual calculate part
-		if operator == "+"
-			final_result = (parseFloat(a)+parseFloat(b)).toFixed(decimal)
-		if operator =="-"
-			final_result = (parseFloat(a)-parseFloat(b)).toFixed(decimal)
-		if operator =="*"
-			final_result = (parseFloat(a)*parseFloat(b)).toFixed(decimal)
-		if operator =="/"
-			temp = parseFloat(a)/parseFloat(b)
-			console.log(temp)
-			decimal_num = countDecimals(temp)
-			if decimal_num > 5
-				final_result = (parseFloat(a)/parseFloat(b)).toFixed(5)
-			else
-				final_result = (parseFloat(a)/parseFloat(b)).toFixed(decimal_num)
-		return final_result
-
 	parenthese_cal = (display_val)->
+		console.log("parenthese equation: "+display_val)
 		while display_val.indexOf("+")>-1 or display_val.indexOf("-")>-1 or display_val.indexOf("*")>-1 or display_val.indexOf("/")>-1
 			operator_regex = /[^0-9.]+/g  #/[^0-9\\.]+/g
 			# getting all the operators
@@ -77,7 +72,23 @@ jQuery ->
 							number_index = index + temp_index
 							a = numbers[number_index]
 							b = numbers[number_index+1]
-							temp = basic_cal(a,b)
+							a_decimal = countDecimals(a)
+							b_decimal = countDecimals(b)
+							decimal = if a_decimal>b_decimal then a_decimal else b_decimal
+							if operators[index] == "+"
+								temp = (parseFloat(a)+parseFloat(b)).toFixed(decimal)
+							if operators[index] == "-"
+								temp = (parseFloat(a)-parseFloat(b)).toFixed(decimal)
+							if operators[index] == "*"
+								temp = (parseFloat(a)*parseFloat(b)).toFixed(decimal)
+							if operator =="/"
+								temp = parseFloat(a)/parseFloat(b)
+								console.log(temp)
+								decimal_num = countDecimals(temp)
+								if decimal_num > 5
+									final_result = (parseFloat(a)/parseFloat(b)).toFixed(5)
+								else
+									final_result = (parseFloat(a)/parseFloat(b)).toFixed(decimal_num)
 							if numbers.length > 2
 								numbers.splice(0,2)
 								numbers.unshift(temp)
@@ -147,6 +158,7 @@ jQuery ->
 		return display_val
 
 	none_parentheses_cal = (left_value)->
+		console.log("non-parenthese equation: "+left_value)
 		# getting all the numbers
 		num_regex =  /[\d\.]+/g #/(\d+)/g
 		numbers = left_value.match(num_regex)
@@ -163,24 +175,23 @@ jQuery ->
 					number_index = index + temp_index
 					a = numbers[number_index]
 					b = numbers[number_index+1]
-					temp =basic_cal(a,b)
-					# a_decimal = countDecimals(a)
-					# b_decimal = countDecimals(b)
-					# decimal = if a_decimal>b_decimal then a_decimal else b_decimal
-					# if operators[index] == "+"
-					# 	temp = (parseFloat(a)+parseFloat(b)).toFixed(decimal)
-					# if operators[index] == "-"
-					# 	temp = (parseFloat(a)-parseFloat(b)).toFixed(decimal)
-					# if operators[index] == "*"
-					# 	temp = (parseFloat(a)*parseFloat(b)).toFixed(decimal)
-					# if operators[index] =="/"
-					# 	temp = parseFloat(a)/parseFloat(b)
-					# 	console.log("/ "+temp)
-					# 	decimal_num = countDecimals(temp)
-					# 	if decimal_num > 5
-					# 		temp = temp.toFixed(5)
-					# 	else
-					# 		temp = temp.toFixed(decimal_num)
+					a_decimal = countDecimals(a)
+					b_decimal = countDecimals(b)
+					decimal = if a_decimal>b_decimal then a_decimal else b_decimal
+					if operators[index] == "+"
+						temp = (parseFloat(a)+parseFloat(b)).toFixed(decimal)
+					if operators[index] == "-"
+						temp = (parseFloat(a)-parseFloat(b)).toFixed(decimal)
+					if operators[index] == "*"
+						temp = (parseFloat(a)*parseFloat(b)).toFixed(decimal)
+					if operators[index] =="/"
+						temp = parseFloat(a)/parseFloat(b)
+						console.log("/ "+temp)
+						decimal_num = countDecimals(temp)
+						if decimal_num > 5
+							temp = temp.toFixed(5)
+						else
+							temp = temp.toFixed(decimal_num)
 					if numbers.length > 2
 						numbers.splice(0,2)
 						numbers.unshift(temp)
@@ -248,16 +259,7 @@ jQuery ->
 					operator_counter = 0
 			else
 				if btn.prop("id") == "equal"
-					if  operator_counter >= 2
-						#complex operation
-						if display_val.indexOf("(")>-1 and display_val.indexOf(")")>-1
-							final_result = parenthese_cal(display_val)
-						else
-							final_result = none_parentheses_cal(display_val)
-					else
-						# single operation
-						final_result = none_parentheses_cal(display_val)
-					$("#display_val").val(final_result)
+					enter_to_calculate()
 				else
 					## input part
 					# if dot is already in the number then disable any more dots, but if there is operator after one number then dot is allow for the second number
@@ -284,11 +286,5 @@ jQuery ->
 							console.log(display_val)
 					# $("#display_val").text(display_val)
 					$("#display_val").val(display_val)
-
-
-
 		)
-	)
-	$("#equal").on("click", ->
-
 	)
