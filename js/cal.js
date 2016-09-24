@@ -60,17 +60,22 @@
       is_integer = /^\d+$/.test(value);
       if (is_integer) {
         value = value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        return value;
       } else {
-        integer_part = value.split(".")[0];
-        decimal_part = value.split(".")[1];
-        integer_value = integer_part.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        value = integer_value + "." + decimal_part;
-        return value;
+        if (value.toString().indexOf("-") > -1) {
+          value = value.toString().replace("-", "");
+          value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+          value = "-" + value;
+        } else {
+          integer_part = value.split(".")[0];
+          decimal_part = value.split(".")[1];
+          integer_value = integer_part.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+          value = integer_value + "." + decimal_part;
+        }
       }
+      return value;
     };
     parenthese_cal = function(display_val) {
-      var left_value, matches, negative_inside, num_regex, operator_regex, parenthese_value, priority_operation, regExp, temp_index;
+      var left_value, matches, negative_inside, num_regex, operator_regex, parenthese_value, priority_operation, regExp, temp_display_val, temp_index;
       console.log("parenthese equation: " + display_val);
       while (display_val.indexOf("+") > -1 || display_val.indexOf("-") > -1 || display_val.indexOf("*") > -1 || display_val.indexOf("/") > -1) {
         operator_regex = /[^0-9.]+/g;
@@ -191,6 +196,26 @@
             display_val = display_val.toString();
             break;
           } else {
+            if (display_val.indexOf("--") > -1) {
+              display_val = display_val.replace("--", "+");
+            }
+            if (display_val.indexOf("+-") > -1) {
+              display_val = display_val.replace("+-", "-");
+            }
+            if (display_val.indexOf("*-") > -1) {
+              temp_display_val = display_val.replace("*-", "");
+              if (temp_display_val.indexOf("+") === -1 && temp_display_val.indexOf("+") === -1) {
+                display_val = display_val.replace("*-", "*");
+                display_val = "0-" + display_val;
+              }
+            }
+            if (display_val.indexOf("/-") > -1) {
+              temp_display_val = display_val.replace("*-", "");
+              if (temp_display_val.indexOf("+") === -1 && temp_display_val.indexOf("+") === -1) {
+                display_val = display_val.replace("/-", "/");
+                display_val = "0-" + display_val;
+              }
+            }
             display_val = none_parentheses_cal(display_val);
             display_val = display_val.toString();
           }
@@ -229,7 +254,6 @@
             }
             if (operators[index] === "/") {
               temp = parseFloat(a) / parseFloat(b);
-              console.log("/ " + temp);
               decimal_num = countDecimals(temp);
               if (decimal_num > 5) {
                 temp = temp.toFixed(5);
@@ -345,11 +369,9 @@
                   display_val = display_val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                 } else {
                   a = display_val.length - 3;
-                  console.log(a);
                   next_comma = 1;
                   move = 0;
                   while (a > 0) {
-                    console.log("break position " + (a + move));
                     display_val = display_val.slice(0, a + move) + "," + display_val.slice(a + move);
                     a -= 3;
                     next_comma += 1;

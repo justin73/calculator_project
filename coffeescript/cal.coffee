@@ -53,14 +53,18 @@ jQuery ->
 		# if it is integer, then add comma after every three digits
 		if is_integer
 			value = value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-			return value
 		# if it is decimal, only add comma after every three digits before the dot
 		else
-			integer_part = value.split(".")[0]
-			decimal_part = value.split(".")[1]
-			integer_value = integer_part.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-			value = integer_value+"."+decimal_part
-			return value
+			if value.toString().indexOf("-")> -1
+				value = value.toString().replace("-","")
+				value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+				value = "-"+value
+			else
+				integer_part = value.split(".")[0]
+				decimal_part = value.split(".")[1]
+				integer_value = integer_part.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+				value = integer_value+"."+decimal_part
+		return value
 
 	parenthese_cal = (display_val)->
 		console.log("parenthese equation: "+display_val)
@@ -172,6 +176,20 @@ jQuery ->
 					display_val = display_val.toString()
 					break
 				else
+					if display_val.indexOf("--") > -1
+						display_val = display_val.replace("--","+")
+					if display_val.indexOf("+-") > -1
+						display_val = display_val.replace("+-","-")
+					if display_val.indexOf("*-") > -1
+						temp_display_val = display_val.replace("*-","")
+						if temp_display_val.indexOf("+") == -1 and temp_display_val.indexOf("+") == -1
+							display_val = display_val.replace("*-","*")
+							display_val = "0-"+display_val
+					if display_val.indexOf("/-") > -1
+						temp_display_val = display_val.replace("*-","")
+						if temp_display_val.indexOf("+") == -1 and temp_display_val.indexOf("+") == -1
+							display_val = display_val.replace("/-","/")
+							display_val = "0-"+display_val
 					display_val = none_parentheses_cal(display_val)
 					display_val = display_val.toString()
 				continue
@@ -206,7 +224,6 @@ jQuery ->
 						temp = (parseFloat(a)*parseFloat(b)).toFixed(decimal)
 					if operators[index] =="/"
 						temp = parseFloat(a)/parseFloat(b)
-						console.log("/ "+temp)
 						decimal_num = countDecimals(temp)
 						if decimal_num > 5
 							temp = temp.toFixed(5)
@@ -309,11 +326,9 @@ jQuery ->
 								display_val = display_val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
 							else
 								a = display_val.length-3
-								console.log(a)
 								next_comma = 1
 								move = 0
 								while a > 0
-									console.log("break position "+(a+move))
 									display_val = display_val.slice(0, a+move) + "," + display_val.slice(a+move)
 									a -=3
 									next_comma +=1
