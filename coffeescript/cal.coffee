@@ -11,8 +11,24 @@ jQuery ->
 	is_negative = false
 
 	$( "#display_val" ).on("keypress", (e)->
+		display_val = $("#display_val").val()
+		last_char = display_val[display_val.length-1]
+		current_char = String.fromCharCode(e.keyCode)
 		valid_keys= [13,40,41,42,45,46,47,63,43,95,48,49,50,51,52,53,54,55,56,57]
 		if valid_keys.indexOf(e.keyCode) == -1
+			return false
+		if last_char =="(" and current_char==")"
+			return false
+		if last_char >= '0' && last_char <= '9' and current_char =="("
+			return false
+		if (display_val.length==0 and "+-*/".indexOf(current_char)>-1 ) or (last_char =="(" and "+-*/".indexOf(current_char)>-1)
+			return false
+		# forbid multiple 0 at the beginning of the value and first char is operators
+		if last_char == "0" && current_char == "0" and display_val.length == 1
+			return false
+		if (last_char =="*" or last_char =="/" or last_char =="+" or last_char =="-") and current_char==")"
+			return false
+		if display_val.indexOf("(") == -1 and current_char == ")"
 			return false
 		if e.keyCode == 13
 			enter_to_calculate()
@@ -62,11 +78,6 @@ jQuery ->
 					display_val = "0+"+display_val
 					console.log("there is no minus ahead" + display_val)
 		return display_val
-	mixed_level_operation = (a,b,operator)->
-
-	first_level_operation = (a,b,operator)->
-
-	second_level_operation = (a,b,operator)->
 
 	enter_to_calculate = ->
 		display_val = $("#display_val").val()
@@ -75,7 +86,6 @@ jQuery ->
 		if  operators.length >= 2
 			#complex operation
 			if display_val.indexOf("(")>-1 and display_val.indexOf(")")>-1
-
 				final_result = parenthese_cal(display_val)
 			else
 				final_result = none_parentheses_cal(display_val)
@@ -355,7 +365,6 @@ jQuery ->
 							has_dot = true
 					else
 						skip_text = false
-						console.log(last_char)
 						if last_char =="(" and btn.text()==")"
 							skip_text = true
 						if last_char >= '0' && last_char <= '9' and btn.text() =="("
@@ -367,9 +376,9 @@ jQuery ->
 							skip_text = true
 						if (last_char =="*" or last_char =="/" or last_char =="+" or last_char =="-") and btn.text()==")"
 							skip_text = true
+						if display_val.indexOf("(") == -1 and btn.text() == ")"
+							skip_text = true
 						if not skip_text
-						# forbid multiple 0 at the beginning of the value and first char is operators
-						# if not(last_char == "0" && btn.text() == "0" and display_val.length == 1) and not(display_val.length==0 and btn.hasClass("operator")) and not((last_char >= '0' && last_char <= '9') and btn.text() =="(") and not (last_char =="(" and btn.text()==")")#and not ( "()*/+-".indexOf(last_char)> -1 and "()*/+-".indexOf(btn.text())>-1)
 							display_val += btn.text()
 							display_val = display_val.replace(/,/g , "")
 							comma_count = display_val.length/3
