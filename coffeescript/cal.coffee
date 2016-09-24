@@ -8,6 +8,7 @@ jQuery ->
 	factor_divider = ['+','-','*','/']
 	numbers = []
 	operators=[]
+	is_negative = false
 
 	$( "#display_val" ).on("keypress", (e)->
 		valid_keys= [13,40,41,42,45,46,47,63,43,95,48,49,50,51,52,53,54,55,56,57]
@@ -27,6 +28,46 @@ jQuery ->
 		num_regex =  /[\d\.]+/g #/(\d+)/g
 		numbers = value.match(num_regex)
 
+	handle_neg_value = (display_val,neg_operators)->
+		first = neg_operators.charAt(0)
+		negative_index = display_val.indexOf(neg_operators)
+		temp_display_val = display_val.replace(neg_operators,"")
+		if temp_display_val.indexOf("+") == -1 and temp_display_val.indexOf("+") == -1
+			display_val = display_val.replace(neg_operators,first)
+			is_negative = true
+			display_val = display_val
+		else
+			console.log("plus position:" + display_val.indexOf("+"))
+			console.log("*- position:" + display_val.indexOf(neg_operators))
+			if display_val.indexOf(neg_operators)> -1 and display_val.indexOf("+")> -1
+				if display_val.indexOf("+") < display_val.indexOf(neg_operators)
+					display_val = display_val.replace(neg_operators,first)
+					temp =display_val.slice(display_val.indexOf("+"))
+					display_val_remaining = temp.slice(1)
+					display_val = display_val.slice(0,display_val.indexOf("+"))+"+0-"+display_val_remaining
+					console.log("there is a plus ahead"  + display_val)
+				else
+					display_val = display_val.replace(neg_operators,first)
+					display_val = "0-"+display_val
+					console.log("there is no plus ahead" + display_val)
+			if display_val.indexOf(neg_operators)> -1 and display_val.indexOf("-")> -1
+				if display_val.indexOf("-") < display_val.indexOf(neg_operators)
+					display_val = display_val.replace(neg_operators,first)
+					temp =display_val.slice(display_val.indexOf("-"))
+					display_val_remaining = temp.slice(1)
+					display_val = display_val.slice(0,display_val.indexOf("+"))+"+0+"+display_val_remaining
+					console.log("there is a minus ahead"  + display_val)
+				else
+					display_val = display_val.replace(neg_operators,first)
+					display_val = "0+"+display_val
+					console.log("there is no minus ahead" + display_val)
+		return display_val
+	mixed_level_operation = (a,b,operator)->
+
+	first_level_operation = (a,b,operator)->
+
+	second_level_operation = (a,b,operator)->
+
 	enter_to_calculate = ->
 		display_val = $("#display_val").val()
 		display_val = remove_comma(display_val)
@@ -42,6 +83,8 @@ jQuery ->
 			# single operation
 			final_result = none_parentheses_cal(display_val)
 		final_result = add_comma(final_result)
+		if is_negative
+			final_result = "-"+final_result
 		$("#display_val").val(final_result)
 
 	countDecimals = (value)->
@@ -55,6 +98,7 @@ jQuery ->
 	remove_comma = (value)->
 		new_value = value.replace(",","")
 		return new_value
+
 	add_comma = (value)->
 		is_integer = /^\d+$/.test(value)
 		# if it is integer, then add comma after every three digits
@@ -106,7 +150,7 @@ jQuery ->
 								temp = (parseFloat(a)-parseFloat(b)).toFixed(decimal)
 							if operators[index] == "*"
 								temp = (parseFloat(a)*parseFloat(b)).toFixed(decimal)
-							if operator =="/"
+							if operators[index] =="/"
 								temp = parseFloat(a)/parseFloat(b)
 								console.log(temp)
 								decimal_num = countDecimals(temp)
@@ -180,39 +224,9 @@ jQuery ->
 					if display_val.indexOf("+-") > -1
 						display_val = display_val.replace("+-","-")
 					if display_val.indexOf("*-") > -1
-						negative_index = display_val.indexOf("*-")
-						temp_display_val = display_val.replace("*-","")
-						if temp_display_val.indexOf("+") == -1 and temp_display_val.indexOf("+") == -1
-							display_val = display_val.replace("*-","*")
-							display_val = "0-"+display_val
-						else
-							console.log("plus position:" + display_val.indexOf("+"))
-							console.log("*- position:" + display_val.indexOf("*-"))
-							if display_val.indexOf("+")> -1
-								if display_val.indexOf("+") < display_val.indexOf("*-")
-									display_val = display_val.replace("*-","*")
-									temp =display_val.slice(display_val.indexOf("+"))
-									display_val_remaining = temp.slice(1)
-									display_val = display_val.slice(0,display_val.indexOf("+"))+"+0-"+display_val_remaining
-									console.log("there is a plus ahead"  + display_val)
-								else
-									display_val = "0-"+display_val
-									console.log("there is no plus ahead" + display_val)
-							if display_val.indexOf("-")> -1
-								if display_val.indexOf("-") < display_val.indexOf("*-")
-									display_val = display_val.replace("*-","*")
-									temp =display_val.slice(display_val.indexOf("-"))
-									display_val_remaining = temp.slice(1)
-									display_val = display_val.slice(0,display_val.indexOf("+"))+"+0+"+display_val_remaining
-									console.log("there is a minus ahead"  + display_val)
-								else
-									display_val = "0+"+display_val
-									console.log("there is no minus ahead" + display_val)
+						display_val = handle_neg_value(display_val,"*-")
 					if display_val.indexOf("/-") > -1
-						temp_display_val = display_val.replace("*-","")
-						if temp_display_val.indexOf("+") == -1 and temp_display_val.indexOf("+") == -1
-							display_val = display_val.replace("/-","/")
-							display_val = "0-"+display_val
+						display_val =  handle_neg_value(display_val,"/-")
 					display_val = none_parentheses_cal(display_val)
 					display_val = display_val.toString()
 				continue
@@ -220,8 +234,6 @@ jQuery ->
 
 	none_parentheses_cal = (left_value)->
 		console.log("non-parenthese equation: "+left_value)
-		if left_value.charAt(0) == "-"
-			left_value = "0"+left_value
 		# getting all the numbers
 		numbers = get_numbers(left_value)
 		operators = get_operators(left_value)
@@ -299,6 +311,8 @@ jQuery ->
 						else
 							return false
 					)
+		if final_result.toString().indexOf("-")>-1
+			is_negative = false
 		return final_result
 
 	# iterate through all the keys and add listener to them to decide which operation to take
