@@ -118,12 +118,22 @@ jQuery ->
 		else
 			if value.toString().indexOf("-")> -1
 				value = value.toString().replace("-","")
-				value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+				if value.indexOf(".") > -1
+					integer_part = value.toString().split(".")[0]
+					decimal_part = value.toString().split(".")[1]
+					if decimal_part.length >=5
+						decimal_part = decimal_part.substring(0,8)
+					integer_value = integer_part.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+					value = integer_value+"."+decimal_part
+				else
+					value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
 				value = "-"+value
 			else
-				integer_part = value.split(".")[0]
-				decimal_part = value.split(".")[1]
+				integer_part = value.toString().split(".")[0]
+				decimal_part = value.toString().split(".")[1]
 				integer_value = integer_part.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+				if decimal_part.length >=5
+					decimal_part = decimal_part.substring(0,8)
 				value = integer_value+"."+decimal_part
 		return value
 
