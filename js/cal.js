@@ -272,6 +272,9 @@
     none_parentheses_cal = function(left_value) {
       var final_result, temp_index;
       console.log("non-parenthese equation: " + left_value);
+      if (left_value.charAt(0) === "-") {
+        left_value = "0" + left_value;
+      }
       numbers = get_numbers(left_value);
       operators = get_operators(left_value);
       temp_index = 0;

@@ -234,6 +234,8 @@ jQuery ->
 
 	none_parentheses_cal = (left_value)->
 		console.log("non-parenthese equation: "+left_value)
+		if left_value.charAt(0) == "-"
+			left_value = "0"+left_value
 		# getting all the numbers
 		numbers = get_numbers(left_value)
 		operators = get_operators(left_value)
