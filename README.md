@@ -13,7 +13,7 @@ For now, the calculator can do:
   
   
 Exisiting bugs:
-  1. there may be some input validation is not covered. 
+  1. there may be some input validation not covered. 
   2. only allows one layer of parenthese for now. 
 
 
