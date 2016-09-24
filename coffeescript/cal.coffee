@@ -20,12 +20,15 @@ jQuery ->
 
 	enter_to_calculate = ->
 		display_val = $("#display_val").val()
+		display_val = remove_comma(display_val)
 		operator_regex = /[^0-9.]+/g  #/[^0-9\\.]+/g
 		# getting all the operators
 		operators = display_val.match(operator_regex)
+
 		if  operators.length >= 2
 			#complex operation
 			if display_val.indexOf("(")>-1 and display_val.indexOf(")")>-1
+
 				final_result = parenthese_cal(display_val)
 			else
 				final_result = none_parentheses_cal(display_val)
@@ -298,16 +301,29 @@ jQuery ->
 							display_val += btn.text()
 							has_dot = true
 					else
+						append_comma = true
 						# forbid multiple 0 at the beginning of the value and first char is operators
 						if not(last_char == "0" && btn.text() == "0" and display_val.length == 1) and not(display_val.length==0 and btn.hasClass("operator")) #and not ( "()*/+-".indexOf(last_char)> -1 and "()*/+-".indexOf(btn.text())>-1)
 							display_val += btn.text()
-							if append_comma
+							# display_val = display_val.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+							# if append_comma
+							# comma_count = display_val.split(",").length - 1
+							# console.log("there are now "+comma_count+" comma")
+							display_val = display_val.replace(/,/g , "")
+
+							comma_count = display_val.length/3
+							console.log(display_val)
+							console.log(comma_count)
+							if comma_count > 2
+								display_val = display_val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+							else
 								a = display_val.length-3
 								console.log(a)
 								next_comma = 1
 								move = 0
 								while a > 0
-									display_val = display_val.slice(0, 3*next_comma+move) + "," + display_val.slice(3*next_comma+move)
+									console.log("break position "+(a+move))
+									display_val = display_val.slice(0, a+move) + "," + display_val.slice(a+move)
 									a -=3
 									next_comma +=1
 									move +=1
@@ -315,6 +331,7 @@ jQuery ->
 									# display_val = display_val.substr(0,display_val.length-3)+","+last_three_char
 
 					append_comma = false
+
 					$("#display_val").val(display_val)
 		)
 	)

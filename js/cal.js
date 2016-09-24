@@ -24,6 +24,7 @@
     enter_to_calculate = function() {
       var display_val, final_result, operator_regex;
       display_val = $("#display_val").val();
+      display_val = remove_comma(display_val);
       operator_regex = /[^0-9.]+/g;
       operators = display_val.match(operator_regex);
       if (operators.length >= 2) {
@@ -299,7 +300,7 @@
     };
     return $.each(keys, function(index, value) {
       return $(this).on("click", function() {
-        var a, append_comma, btn, display_val, factor, last_char, move, next_comma;
+        var a, append_comma, btn, comma_count, display_val, factor, last_char, move, next_comma;
         btn = $(this);
         display_val = $("#display_val").val();
         if (btn.prop("id") === "clear") {
@@ -335,15 +336,23 @@
                 has_dot = true;
               }
             } else {
+              append_comma = true;
               if (!(last_char === "0" && btn.text() === "0" && display_val.length === 1) && !(display_val.length === 0 && btn.hasClass("operator"))) {
                 display_val += btn.text();
-                if (append_comma) {
+                display_val = display_val.replace(/,/g, "");
+                comma_count = display_val.length / 3;
+                console.log(display_val);
+                console.log(comma_count);
+                if (comma_count > 2) {
+                  display_val = display_val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                } else {
                   a = display_val.length - 3;
                   console.log(a);
                   next_comma = 1;
                   move = 0;
                   while (a > 0) {
-                    display_val = display_val.slice(0, 3 * next_comma + move) + "," + display_val.slice(3 * next_comma + move);
+                    console.log("break position " + (a + move));
+                    display_val = display_val.slice(0, a + move) + "," + display_val.slice(a + move);
                     a -= 3;
                     next_comma += 1;
                     move += 1;
