@@ -271,6 +271,7 @@
     };
     none_parentheses_cal = function(left_value) {
       var final_result, temp_index;
+      left_value = left_value.replace(/,/g, "");
       console.log("non-parenthese equation: " + left_value);
       if (left_value.charAt(0) === "-") {
         left_value = "0" + left_value;
@@ -373,7 +374,7 @@
     };
     return $.each(keys, function(index, value) {
       return $(this).on("click", function() {
-        var a, append_comma, btn, comma_count, display_val, factor, last_char, move, next_comma;
+        var a, btn, comma_count, display_val, factor, last_char, move, next_comma, skip_text;
         btn = $(this);
         display_val = $("#display_val").val();
         if (btn.prop("id") === "clear") {
@@ -409,8 +410,24 @@
                 has_dot = true;
               }
             } else {
-              append_comma = true;
-              if (!(last_char === "0" && btn.text() === "0" && display_val.length === 1) && !(display_val.length === 0 && btn.hasClass("operator"))) {
+              skip_text = false;
+              console.log(last_char);
+              if (last_char === "(" && btn.text() === ")") {
+                skip_text = true;
+              }
+              if (last_char >= '0' && last_char <= '9' && btn.text() === "(") {
+                skip_text = true;
+              }
+              if ((display_val.length === 0 && btn.hasClass("operator")) || (last_char === "(" && btn.hasClass("operator"))) {
+                skip_text = true;
+              }
+              if (last_char === "0" && btn.text() === "0" && display_val.length === 1) {
+                skip_text = true;
+              }
+              if ((last_char === "*" || last_char === "/" || last_char === "+" || last_char === "-") && btn.text() === ")") {
+                skip_text = true;
+              }
+              if (!skip_text) {
                 display_val += btn.text();
                 display_val = display_val.replace(/,/g, "");
                 comma_count = display_val.length / 3;

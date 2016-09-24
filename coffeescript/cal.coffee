@@ -233,6 +233,7 @@ jQuery ->
 		return display_val
 
 	none_parentheses_cal = (left_value)->
+		left_value = left_value.replace(/,/g , "")
 		console.log("non-parenthese equation: "+left_value)
 		if left_value.charAt(0) == "-"
 			left_value = "0"+left_value
@@ -353,9 +354,22 @@ jQuery ->
 							display_val += btn.text()
 							has_dot = true
 					else
-						append_comma = true
+						skip_text = false
+						console.log(last_char)
+						if last_char =="(" and btn.text()==")"
+							skip_text = true
+						if last_char >= '0' && last_char <= '9' and btn.text() =="("
+							skip_text = true
+						if (display_val.length==0 and btn.hasClass("operator")) or (last_char =="(" and btn.hasClass("operator"))
+							skip_text = true
 						# forbid multiple 0 at the beginning of the value and first char is operators
-						if not(last_char == "0" && btn.text() == "0" and display_val.length == 1) and not(display_val.length==0 and btn.hasClass("operator")) #and not ( "()*/+-".indexOf(last_char)> -1 and "()*/+-".indexOf(btn.text())>-1)
+						if last_char == "0" && btn.text() == "0" and display_val.length == 1
+							skip_text = true
+						if (last_char =="*" or last_char =="/" or last_char =="+" or last_char =="-") and btn.text()==")"
+							skip_text = true
+						if not skip_text
+						# forbid multiple 0 at the beginning of the value and first char is operators
+						# if not(last_char == "0" && btn.text() == "0" and display_val.length == 1) and not(display_val.length==0 and btn.hasClass("operator")) and not((last_char >= '0' && last_char <= '9') and btn.text() =="(") and not (last_char =="(" and btn.text()==")")#and not ( "()*/+-".indexOf(last_char)> -1 and "()*/+-".indexOf(btn.text())>-1)
 							display_val += btn.text()
 							display_val = display_val.replace(/,/g , "")
 							comma_count = display_val.length/3
@@ -370,6 +384,7 @@ jQuery ->
 									a -=3
 									next_comma +=1
 									move +=1
+						# skip_text = true
 					$("#display_val").val(display_val)
 		)
 	)
