@@ -341,8 +341,6 @@
                 display_val += btn.text();
                 display_val = display_val.replace(/,/g, "");
                 comma_count = display_val.length / 3;
-                console.log(display_val);
-                console.log(comma_count);
                 if (comma_count > 2) {
                   display_val = display_val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                 } else {
@@ -360,7 +358,6 @@
                 }
               }
             }
-            append_comma = false;
             return $("#display_val").val(display_val);
           }
         }
